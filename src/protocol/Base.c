@@ -202,9 +202,16 @@ int swProtocol_recv_check_length(swProtocol *protocol, swConnection *conn, swStr
                     buffer->length = remaining_length;
                     goto do_get_length;
                 }
-                swString_clear(buffer);
+                else
+                {
+                    swString_clear(buffer);
+                    goto do_recv;
+                }
             }
-            return SW_OK;
+            else
+            {
+                return SW_OK;
+            }
         }
         else
         {

@@ -122,9 +122,9 @@ void swWorker_signal_handler(int signo)
 
 static sw_inline int swWorker_discard_data(swServer *serv, swEventData *task)
 {
-    int session_id = task->info.fd;
+    int fd = task->info.fd;
     //check connection
-    swConnection *conn = swServer_connection_verify(serv, session_id);
+    swConnection *conn = swServer_connection_verify(serv, task->info.fd);
     if (conn == NULL)
     {
         if (serv->disable_notify && !serv->discard_timeout_request)
@@ -152,12 +152,12 @@ static sw_inline int swWorker_discard_data(swServer *serv, swEventData *task)
         memcpy(&package, task->data, sizeof(package));
         swReactorThread *thread = swServer_get_thread(SwooleG.serv, task->info.from_id);
         thread->buffer_input->free(thread->buffer_input, package.data);
-        swoole_error_log(SW_LOG_WARNING, SW_ERROR_SESSION_DISCARD_TIMEOUT_DATA, "[1]received the wrong data[%d bytes] from socket#%d", package.length, session_id);
+        swoole_error_log(SW_LOG_WARNING, SW_ERROR_SESSION_DISCARD_TIMEOUT_DATA, "[1]received the wrong data[%d bytes] from socket#%d", package.length, fd);
     }
     else
 #endif
     {
-        swoole_error_log(SW_LOG_WARNING, SW_ERROR_SESSION_DISCARD_TIMEOUT_DATA, "[1]received the wrong data[%d bytes] from socket#%d", task->info.len, session_id);
+        swoole_error_log(SW_LOG_WARNING, SW_ERROR_SESSION_DISCARD_TIMEOUT_DATA, "[1]received the wrong data[%d bytes] from socket#%d", task->info.len, fd);
     }
     return SW_TRUE;
 }
